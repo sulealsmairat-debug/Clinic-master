@@ -1,0 +1,206 @@
+# Clinic-master
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clinic Master V10 - Suliman Alsmairat</title>
+    <style>
+        :root {
+            --bg-dark: #020b1a; --card-bg: #0e2f63; --header-bg: #0b2a5b;
+            --accent: #00d4ff; --text: #ffffff;
+            --over-color: #2ecc71; --no-color: #e74c3c; --coord-color: #f39c12; --warn-color: #ffcc00;
+        }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg-dark); color: var(--text); padding-bottom: 240px; overflow-x: hidden; }
+        
+        .sticky-top { position: sticky; top: 0; z-index: 1000; background: rgba(11, 42, 91, 0.98); backdrop-filter: blur(10px); border-bottom: 2px solid var(--accent); padding: 8px 0; }
+        header { text-align: center; font-size: 18px; font-weight: 900; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 5px; }
+
+        .legend-bar { display: flex; justify-content: center; gap: 15px; padding: 5px; background: rgba(0,0,0,0.2); font-size: 10px; font-weight: bold; }
+        .leg-item { display: flex; align-items: center; gap: 5px; }
+        .dot { width: 8px; height: 8px; border-radius: 50%; box-shadow: 0 0 5px currentColor; }
+
+        .search-row { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 8px 20px; }
+        #search { flex: 1; max-width: 500px; padding: 10px 20px; border-radius: 20px; border: none; font-size: 14px; outline: none; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(0,212,255,0.3); }
+        
+        .nav-btn { background: none; border: 1px solid var(--accent); color: var(--accent); padding: 8px 20px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; transition: 0.3s; }
+        .nav-btn.active { background: var(--accent); color: #000; box-shadow: 0 0 10px var(--accent); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; padding: 20px; }
+        .card { background: var(--card-bg); padding: 18px; border-radius: 12px; border-left: 6px solid; display: flex; flex-direction: column; min-height: 160px; transition: 0.3s; position: relative; border-right: 1px solid rgba(255,255,255,0.05); }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.4); border-right: 1px solid var(--accent); }
+        .card h3 { margin: 0 0 8px 0; font-size: 12px; color: #9fd3ff; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; letter-spacing: 0.5px; }
+        
+        .over { border-left-color: var(--over-color); } 
+        .no { border-left-color: var(--no-color); } 
+        .coord { border-left-color: var(--coord-color); } 
+
+        .rule-badge { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 9px; font-weight: 800; margin-bottom: 10px; text-transform: uppercase; }
+        .over .rule-badge { background: var(--over-color); color: #000; }
+        .no .rule-badge { background: var(--no-color); color: #fff; }
+        .coord .rule-badge { background: var(--coord-color); color: #000; }
+
+        .note { font-size: 10px; color: var(--warn-color); background: rgba(0,0,0,0.3); padding: 6px; border-radius: 5px; margin-top: auto; border: 1px solid rgba(255,204,0,0.3); line-height: 1.3; }
+        .email-btn { background: #fff; color: #000; border: none; padding: 10px; border-radius: 5px; font-size: 11px; font-weight: bold; cursor: pointer; margin-top: 12px; transition: 0.2s; }
+        .email-btn:hover { background: var(--accent); letter-spacing: 1px; }
+
+        .footer { position: fixed; bottom: 0; width: 100%; background: #010814; border-top: 3px solid var(--accent); padding: 12px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; font-size: 10px; z-index: 2000; }
+        .f-box b { color: var(--accent); display: block; margin-bottom: 2px; font-size: 11px; }
+        .tag { grid-column: 1/4; text-align: center; font-weight: 900; padding-top: 10px; color: var(--accent); font-size: 15px; letter-spacing: 3px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 5px; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="sticky-top">
+    <header>Clinic Master Hub</header>
+    
+    <div class="legend-bar">
+        <div class="leg-item"><span class="dot" style="background:var(--over-color)"></span> 120% OVERBOOK</div>
+        <div class="leg-item"><span class="dot" style="background:var(--no-color)"></span> NO OVERBOOK</div>
+        <div class="leg-item"><span class="dot" style="background:var(--coord-color)"></span> EMAIL COORDINATOR</div>
+    </div>
+
+    <div class="search-row">
+        <button class="nav-btn active" id="btn-app" onclick="tab('app')">APPOINTMENTS</button>
+        <input id="search" placeholder="🔍 Search Clinics..." onkeyup="doSearch()">
+        <button class="nav-btn" id="btn-call" onclick="tab('call')">CALL BACKS</button>
+    </div>
+</div>
+
+<div id="appPage" class="grid"></div>
+<div id="callPage" class="grid hidden"></div>
+
+<div class="footer">
+    <div class="f-box"><b>🫀 ECG 12 LEAD</b>M-T: 08:00-14:30<br>Fri: 08:00-11:00</div>
+    <div class="f-box"><b>⏱️ OUTPATIENT</b>M-T: 07:30-14:30<br>Fri: 07:30-11:00</div>
+    <div class="f-box"><b>🧪 SEMEN ANALYSIS</b>042195458<br>Mon-Thu Only</div>
+    <div class="tag">CREATED BY SULIMAN ALSMAIRAT</div>
+</div>
+
+<script>
+const gCC = "CC_Coordinator@dubaihealth.ae";
+const em = {
+    Ansu: "Ajohan@dubaihealth.ae", Bini: "Bigopi@dubaihealth.ae", Zeenet: "ZRinuKoshy@dubaihealth.ae",
+    Rejila: "Rvijay@dubaihealth.ae", Jyothi: "JyothiMG@dubaihealth.ae", Mariam: "dd_maribrahim@dubaihealth.ae",
+    Joby: "Jobjjospeh@dubaihealth.ae", Fariborz: "Mevarkey@dubaihealth.ae", Radhika: "RVNair@dubaihealth.ae",
+    DHHOS: "DH-HOS@Dubaihealth.ae", Cheryl: "Cheryl-email@dubaihealth.ae", Jiji: "Jiji-email@dubaihealth.ae",
+    Jisha: "Jvivek@dubaihealth.ae", Reena: "Rlopez@dubaihealth.ae", Esperance: "efRodrigues@dubaihealth.ae"
+};
+
+const appts = [
+    { n: "Allergy", s: "no", r: "No Overbooking" },
+    { n: "DH ANC & Cardiology", s: "over", r: "Overbooking 120%" },
+    { n: "DH ANC & Diabetic", s: "over", r: "Overbooking 120%" },
+    { n: "DH Antenatal & Rheumatology", s: "over", r: "Overbooking 120%" },
+    { n: "DH Anticoagulation", s: "coord", to: [em.Ansu], r: "Email Ansu" },
+    { n: "DH Breast Surgery", s: "over", r: "Overbooking 120%" },
+    { n: "DH Cardiac Devices", s: "coord", to: [em.Ansu], r: "Email Ansu" },
+    { n: "DH Cardiac High Risk (CHRC)", s: "coord", to: [em.Ansu], r: "Email Ansu" },
+    { n: "DH Cardiac Surgery", s: "over", r: "Overbooking 120%" },
+    { n: "DH Cochlear Implant", s: "coord", to: [em.Bini], r: "Email Bini" },
+    { n: "DH Diabetic Education", s: "no", r: "No Overbooking" },
+    { n: "DH Dietitian", s: "over", r: "Overbooking 120%" },
+    { n: "DH Early Arthritis Rheum", s: "no", r: "No Overbooking" },
+    { n: "DH Endo Diabetes", s: "over", r: "Overbooking 120%", nt: "⚠️ NOT for New Visits (Follow-up Only)." },
+    { n: "DH Endo Thyroid", s: "over", r: "Overbooking 120%", nt: "⚠️ NOT for New Visits (Follow-up Only)." },
+    { n: "DH Fetal Echo", s: "coord", to: [em.Zeenet], r: "Email Zeenet" },
+    { n: "DH Fetal Medicine (FMMU)", s: "coord", to: [em.Zeenet], r: "Email Zeenet" },
+    { n: "DH Gen Bariatric Surgery", s: "over", r: "Overbooking 120%" },
+    { n: "DH Gen Surg Hernia", s: "over", r: "Overbooking 120%" },
+    { n: "DH HCQ Screening", s: "coord", to: [em.Jyothi], r: "Email Jyothi" },
+    { n: "DH Kidney Transplant & Surgical", s: "coord", to: [em.Mariam], r: "Email Mariam" },
+    { n: "DH Neonatology", s: "over", r: "Overbooking 120%" },
+    { n: "DH Neonatology RSV", s: "coord", to: [em.Rejila], r: "Email Rejila" },
+    { n: "DH Nephro LCC", s: "no", r: "No Overbooking", nt: "Follow-Up Only." },
+    { n: "DH Nephro Renal School", s: "no", r: "No Overbooking", nt: "Follow-Up Only." },
+    { n: "DH Oph Cornea Cataract", s: "over", r: "Overbooking 120%" },
+    { n: "DH Oph Glaucoma Catar", s: "over", r: "Overbooking 120%" },
+    { n: "DH Oph Oculoplastics", s: "over", r: "Overbooking 120%" },
+    { n: "DH Oph Refractive Surg", s: "over", r: "Overbooking 120%" },
+    { n: "DH Oph Retina", s: "over", r: "Overbooking 120%" },
+    { n: "DH Oph ROP", s: "coord", to: [em.Jyothi], r: "Email Jyothi" },
+    { n: "DH Ped Orthopedic", s: "over", r: "Overbooking 120%" },
+    { n: "DH Pre-Anesthesia", s: "over", r: "Overbooking 120%" },
+    { n: "DH Pulmonary Hypertension", s: "coord", to: [em.Bini], r: "Email Bini" },
+    { n: "DH Rheum & Neph", s: "over", r: "Overbooking 120%" },
+    { n: "DH Rheumatology", s: "no", r: "No Overbooking" },
+    { n: "DH Rheumatology (Musculoskeletal USS)", s: "coord", to: [em.Ansu], r: "Email Ansu" },
+    { n: "DH Thyroid Surgery", s: "over", r: "Overbooking 120%" },
+    { n: "DH Uro Andrology", s: "over", r: "Overbooking 120%" },
+    { n: "DH Warfarin Clinic", s: "coord", to: [em.Bini], r: "Email Bini" },
+    { n: "DH Wound", s: "over", r: "Overbooking 120%" },
+    { n: "DH07C Infusion Therapy", s: "coord", to: [em.DHHOS], r: "Email DH-HOS" },
+    { n: "Endocrinology (Gen)", s: "over", r: "Overbooking 120%", nt: "⚠️ NOT for New Visits (Follow-up Only)." },
+    { n: "ENT", s: "over", r: "Overbooking 120%" },
+    { n: "General Surgery", s: "over", r: "Overbooking 120%" },
+    { n: "Hearing & Balance", s: "no", r: "No Overbooking" },
+    { n: "Nephrology (Gen)", s: "no", r: "No Overbooking for New Visits" },
+    { n: "Non-inv Cardio", s: "coord", to: [em.Cheryl, em.Jiji], r: "Email Cheryl & Jiji" },
+    { n: "Psychology", s: "no", r: "No Overbooking", nt: "ASAP Request? Email Joby.", to: [em.Joby] },
+    { n: "TRANSTHORACIC (TTE)", s: "coord", to: [em.Cheryl, em.Jiji], r: "Email Cheryl & Jiji" },
+    { n: "Urology (Dr. Fariborz)", s: "coord", to: [em.Fariborz], r: "Email Mevarkey" }
+];
+
+function getCallbackTarget(name) {
+    const n = name.toUpperCase();
+    if (n.includes("CARDIAC SURGERY")) return [em.Bini];
+    if (n.includes("CARDIOLOGY") || n.includes("CARDIAC") || n.includes("RHEUMATOLOGY") || n.includes("RHEUM")) return [em.Ansu];
+    if (n.includes("ENDO") || n.includes("DIABETES") || n.includes("DIABETIC")) return [em.Reena];
+    if (n.includes("NEPHRO")) return [em.Esperance];
+    if (n.includes("GENERAL SURGERY") || n.includes("GEN SURG") || n.includes("BREAST") || n.includes("OPH") || n.includes("THYROID SURGERY")) return [em.Jyothi];
+    if (n.includes("UROLOGY")) return [em.Jisha];
+    if (n.includes("ENT")) return [em.Bini];
+    if (n.includes("PSYCHOLOGY")) return [em.Joby];
+    if (n.includes("NEONATOLOGY")) return [em.Rejila];
+    return [gCC];
+}
+
+appts.sort((a,b) => a.n.localeCompare(b.n));
+
+async function sendMail(dept, to) {
+    const table = `<table border="1" style="border-collapse:collapse; width:100%; font-family:Calibri;">
+        <tr style="background:#0b2a5b; color:#fff;"><th>CRM</th><th>Patient Name</th><th>MRN</th><th>Priority</th><th>Notes</th><th>Department</th></tr>
+        <tr><td height="30"></td><td></td><td></td><td></td><td></td><td>${dept}</td></tr>
+    </table>`;
+    const blob = new Blob([table], { type: 'text/html' });
+    await navigator.clipboard.write([new ClipboardItem({ 'text/html': blob })]);
+    const body = `Dear team,%0A%0AKindly assist with the following request:%0A%0A[PASTE TABLE HERE - Ctrl+V]`;
+    window.location.href = `mailto:${to.join(',')}?subject=${dept} Request&cc=${gCC}&body=${body}`;
+}
+
+function render() {
+    const ap = document.getElementById('appPage');
+    const cp = document.getElementById('callPage');
+    ap.innerHTML = ""; cp.innerHTML = "";
+    appts.forEach(x => {
+        const c = document.createElement('div');
+        c.className = `card clinic-item ${x.s}`;
+        let btn = (x.s==='coord'||x.n==='Psychology') ? `<button onclick="sendMail('${x.n}', [${x.to.map(e=>`'${e}'`)}])" class="email-btn">📧 SEND EMAIL</button>` : '';
+        c.innerHTML = `<h3>${x.n}</h3><span class="rule-badge">${x.r}</span>${x.nt?`<div class="note">${x.nt}</div>`:''}${btn}`;
+        ap.appendChild(c);
+        
+        if (x.n.includes("Dr. Fariborz")) return; 
+        const target = getCallbackTarget(x.n);
+        const cc = document.createElement('div');
+        cc.className = 'card clinic-item coord';
+        cc.innerHTML = `<h3>${x.n}</h3><span class="rule-badge" style="background:var(--coord-color)">CALL BACK REQ</span><div class="note">Route to: ${target[0].split('@')[0]}</div><button onclick="sendMail('${x.n} Call Back', [${target.map(e=>`'${e}'`)}])" class="email-btn">📧 SEND EMAIL</button>`;
+        cp.appendChild(cc);
+    });
+}
+
+function tab(p) {
+    document.getElementById('appPage').classList.toggle('hidden', p!=='app');
+    document.getElementById('callPage').classList.toggle('hidden', p!=='call');
+    document.getElementById('btn-app').classList.toggle('active', p==='app');
+    document.getElementById('btn-call').classList.toggle('active', p==='call');
+}
+
+function doSearch() {
+    const q = document.getElementById('search').value.toLowerCase();
+    document.querySelectorAll('.card').forEach(c => c.style.display = c.innerText.toLowerCase().includes(q) ? 'flex' : 'none');
+}
+
+render();
+</script>
+</body>
+</html>
